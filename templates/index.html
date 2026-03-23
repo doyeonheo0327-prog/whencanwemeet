@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🕒 우리 언제 만나? | 시간 조율</title>
+    <link rel="stylesheet" href="/static/style.css">
+<meta property="og:title" content="🕒 우리 도대체 언제 만나? 🤷‍♀️">
+<meta property="og:description" content="빨리 들어와서 가능한 시간을 칠해주세요! ">
+<meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/3652/3652191.png"> <meta property="og:type" content="website">
+</head>
+<body>
+    <div class="container">
+        <h1>🕒 우리 도대체 언제 만나? 🤷‍♀️</h1>
+        
+        <div id="util-bar" class="filter-bar"></div>
+        <div id="stats-container"></div>
+
+        <input type="text" id="nickname" placeholder="당신의 이름을 적어주세요!" class="name-input">
+        
+        <div class="calendar-header-wrapper">
+            <button id="prevBtn" class="nav-btn">◀</button>
+            <h2 id="monthTitle" class="month-title"></h2>
+            <button id="nextBtn" class="nav-btn">▶</button>
+        </div>
+        
+        <p class="step-guide"><strong>1단계:</strong> 달력에서 가능한 <strong>'날짜'</strong>를 클릭/드래그 하세요.</p>
+        <div id="calendar" class="calendar"></div>
+
+        <hr>
+
+        <p class="step-guide"><strong>2단계:</strong> 가능한 <strong>'시간'</strong>을 드래그로 칠해보세요.</p>
+        
+        <div class="options-bar">
+            <label class="toggle-label">
+                <input type="checkbox" id="repeatToggle" checked> 🔄 같은 요일 한 번에 칠하기
+            </label>
+            <button id="clearBtn" class="clear-btn">🧹 모두 지우기</button>
+        </div>
+
+        <div id="timeTable" class="time-table"></div>
+        
+        <button id="submitBtn" class="submit-btn">내 시간 제출하기! 🎉</button>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
