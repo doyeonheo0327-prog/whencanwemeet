@@ -1,0 +1,107 @@
+/* 기본 테마 및 테두리 설정 */
+:root {
+    --primary: #6c5ce7;
+    --success: #00b894;
+    --success-dark: #009475; /* 드래그 시 더 진한 색 */
+    --border-color: #dcdcdc; /* 4번: 더 명확한 테두리 색 */
+    --bg: #f0f2f5;
+    --card: #ffffff;
+}
+
+body { font-family: 'Malgun Gothic', sans-serif; background-color: var(--bg); color: #2d3436; padding: 20px; margin: 0; text-align: center; }
+
+.container { background: var(--card); padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); max-width: 800px; margin: auto; }
+
+h1 { color: var(--primary); font-size: 1.8rem; margin-bottom: 25px; }
+
+/* 2번 수정: ◀ 제목 ▶ 양옆 배치 CSS */
+.calendar-header-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 0 10px;
+}
+.month-title { color: #333; margin: 0; font-size: 1.3rem; font-weight: bold; }
+.nav-btn { background: #eee; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+.nav-btn:hover { background: #d4e6f1; }
+
+/* 4번 수정: 달력 테두리 명확화 */
+.calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: var(--border-color); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; margin: 20px 0; }
+.cell { background: #fff; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 15px; cursor: pointer; user-select: none; }
+.header { background: #f8f9fa; color: #636e72; font-weight: bold; border: none; }
+.empty { background: transparent; cursor: default; }
+.date-cell:hover { background: #e3f2fd; }
+.date-cell.selected-date { background: var(--primary); color: white; border-color: var(--primary); font-weight: bold; }
+
+/* 4번 수정: 시간표 테두리 명확화 */
+.time-table { display: grid; gap: 1px; background-color: var(--border-color); border: 1px solid var(--border-color); border-radius: 8px; overflow-x: auto; margin: 25px 0; padding-bottom: 5px; }
+.tt-cell { background: #fff; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 11px; cursor: pointer; user-select: none; flex-direction: column; line-height: 1.2; position: relative; }
+.tt-time-label { background: #f8f9fa; font-weight: bold; cursor: default; border-right: 1px solid var(--border-color); }
+.tt-day-header { background: #f8f9fa; font-weight: bold; cursor: default; min-width: 50px; height: 50px; }
+
+/* 3번 수정: 그라데이션 제거 및 즉각적인 단색 적용 */
+.selectable:hover { background-color: #e0f2f1 !important; transition: none; }
+.selectable.selected { 
+    background-color: var(--success-dark) !important; /* 그라데이션 제거 */
+    color: white !important; 
+    border: 1px solid #006e56 !important; /* 구분선 명확히 */
+    box-shadow: inset 0 0 4px rgba(0,0,0,0.2) !important; /* 내부 그림자도 단색으로 */
+    transition: none; /* 즉각적인 반응 */
+}
+
+/* 유틸리티 및 버튼 */
+.name-input { padding: 15px; margin-bottom: 25px; font-size: 16px; border: 2px solid #eee; border-radius: 12px; width: 90%; box-sizing: border-box; }
+.options-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.submit-btn { padding: 18px; background: var(--primary); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; box-sizing: border-box; margin-top: 10px; }
+.submit-btn:hover { background: #5a4bcf; transform: translateY(-2px); }
+hr { border: 0; height: 1px; background: #eee; margin: 25px 0; }
+
+/* 1. iOS 자동 줌 방지 및 가독성 */
+input, select, textarea {
+    font-size: 16px !important; /* 16px 미만이면 아이폰에서 입력 시 화면이 자동 확대되어 불편함 */
+}
+
+/* 2. 아이폰 하단 홈 바(Safe Area) 대응 */
+.submit-btn {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom)); /* 아이폰 하단 바와 겹치지 않게 여백 추가 */
+    height: auto;
+}
+
+/* 3. 터치 드래그 시 텍스트 선택 방지 (매우 중요) */
+/* 시간표를 문지르는데 글자가 선택되거나 복사 팝업이 뜨면 UX가 망가집니다. */
+.time-table, .calendar {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none; /* iOS 롱프레스 메뉴 방지 */
+}
+
+/* 4. 터치 영역(Touch Target) 확보 */
+.cell, .tt-cell {
+    min-height: 48px; /* 구글 권장 최소 터치 크기 */
+}
+
+/* 5. 가로 스크롤바 커스텀 (모바일에서 깔끔하게) */
+.time-table::-webkit-scrollbar {
+    height: 4px;
+}
+.time-table::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+/* 6. 모바일 화면 양옆 여백 조정 */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+        padding-bottom: 120px;
+    }
+    .container {
+        padding: 15px;
+    }
+    h1 {
+        font-size: 1.4rem;
+    }
+}
