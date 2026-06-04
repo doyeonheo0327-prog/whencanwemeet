@@ -1,29 +1,15 @@
 from flask import Flask, render_template, request, jsonify
-import json, os
+from pymongo import MongoClient
+import os
 
 app = Flask(__name__)
 
-DATA_FILE = 'data.json'
-
-# 데이터 구조가 바뀝니다! { "방이름": { "meeting_data": {}, "total_users": [] } }
-def load_data():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {}
-
-def save_data(data):
-    with open(DATA_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False)
-
-# 서버 켤 때 모든 방의 데이터를 한 번에 불러옴
-all_rooms_data = load_data()
-
-# [핵심 로직] 방 데이터가 없으면 새로 만들어주는 헬퍼 함수
-def get_room_data(room_name):
-    if room_name not in all_rooms_data:
-        all_rooms_data[room_name] = {"meeting_data": {}, "total_users": []}
-    return all_rooms_data[room_name]
+# [중요] 몽고DB 연결 주소 
+# 예: "mongodb+srv://아이디:비밀번호@cluster0.abc.mongodb.net/?retryWrites=true&w=majority"
+MONGO_URI = "mongodb+srv://doyeonheo_db_user:doyeon0327!@cluster0.jhsxpfm.mongodb.net/?appName=Cluster0"
+client = MongoClient(MONGO_URI)
+db = client['timetable_db']  
+rooms = db['rooms']         
 
 @app.route('/')
 def index():
@@ -32,42 +18,48 @@ def index():
 @app.route('/submit', methods=['POST'])
 def submit():
     data = request.json
-    room_name = data.get('room', 'main') # JS가 보내준 방 이름 받기 (없으면 'main' 방)
+    room_name = data.get('room', 'main')
     nickname = data.get('nickname')
     times = data.get('times')
 
     if not nickname:
         return jsonify({"status": "error", "message": "이름을 꼭 입력해주세요!"}), 400
-    
-    # 해당 방의 바구니만 쏙 가져오기
-    room_data = get_room_data(room_name)
-    meeting_data = room_data['meeting_data']
+
+    room_data = rooms.find_one({"room_name": room_name})
+    if not room_data:
+        room_data = {"room_name": room_name, "meeting_data": {}, "total_users": []}
+
     total_users = set(room_data['total_users'])
-
     total_users.add(nickname)
-    room_data['total_users'] = list(total_users)
-
-    # 기존 데이터에서 내 이름 지우기 (해당 방 안에서만)
+    
+    meeting_data = room_data['meeting_data']
     for t in list(meeting_data.keys()):
         if nickname in meeting_data[t]:
             meeting_data[t].remove(nickname)
             if not meeting_data[t]:
                 del meeting_data[t]
 
-    # 새로운 시간 추가하기
     for t in times:
         if t not in meeting_data:
             meeting_data[t] = []
         if nickname not in meeting_data[t]:
             meeting_data[t].append(nickname)
-            
-    save_data(all_rooms_data) # 전체 데이터를 파일에 저장
+
+    rooms.update_one(
+        {"room_name": room_name},
+        {"$set": {"meeting_data": meeting_data, "total_users": list(total_users)}},
+        upsert=True
+    )
+
     return jsonify({"status": "success"})
 
 @app.route('/get_data', methods=['GET'])
 def get_data():
-    room_name = request.args.get('room', 'main') # 주소 뒤에 붙은 방 이름 확인
-    room_data = get_room_data(room_name)
+    room_name = request.args.get('room', 'main')
+    room_data = rooms.find_one({"room_name": room_name})
+    
+    if not room_data:
+        return jsonify({"meeting_data": {}, "total_users": []})
     
     return jsonify({
         "meeting_data": room_data['meeting_data'],
@@ -75,4 +67,4 @@ def get_data():
     })
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
