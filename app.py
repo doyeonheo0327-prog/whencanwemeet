@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 # [중요] 몽고DB 연결 주소 
 # 예: "mongodb+srv://아이디:비밀번호@cluster0.abc.mongodb.net/?retryWrites=true&w=majority"
-MONGO_URI = "mongodb+srv://doyeonheo_db_user:hesom007!@cluster0.jhsxpfm.mongodb.net/?appName=Cluster0"
+MONGO_URI = "mongodb+srv://doyeonheo_db_user:doyeon0327@cluster0.jhsxpfm.mongodb.net/?appName=Cluster0"
 client = MongoClient(MONGO_URI)
 db = client['timetable_db']  
 rooms = db['rooms']         
